@@ -7,7 +7,7 @@
     <meta name="description" content="Calculate paint liters, wall putty, primers, and total purchase bill for paints, plumbing pipes, electrical wires & hardware supplies at T.S. Tharun Paints Sankarankoil.">
     <link rel="icon" type="image/png" href="images/favicon.png">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 
@@ -130,7 +130,7 @@
                             </label>
                             <div>
                                 <strong>Include Estimated Painter Labour Charges</strong>
-                                <p style="margin: 2px 0 0; font-size: 13px; color: #94a3b8;">Based on prevailing Sankarankoil master painter contract rates (₹10–14 / sq.ft).</p>
+                                <p style="margin: 2px 0 0; font-size: 13px; color: #475569;">Based on prevailing Sankarankoil master painter contract rates (₹10–14 / sq.ft).</p>
                             </div>
                         </div>
                     </div>
@@ -198,6 +198,9 @@
                             <button type="button" class="calc-btn secondary-calc-btn" id="transferToCartBtn">
                                 <span>Add Materials to Hardware Bill Cart ➔</span>
                             </button>
+                            <button type="button" class="calc-btn hardware-bridge-btn" id="transferAreaToHardwareBtn">
+                                <span>⚡ Transfer Area &amp; Estimate Hardware Materials ➔</span>
+                            </button>
                         </div>
                     </div>
 
@@ -209,6 +212,201 @@
             <!-- ============================================== -->
             <div class="calc-panel" id="panel-hardware">
                 
+                <!-- 1. Automatic Hardware Material & Cost Estimator Card -->
+                <div class="calc-card hw-estimator-card" id="hwAutoEstimatorCard" style="margin-bottom: 28px;">
+                    <div class="calc-card-header flex-header">
+                        <div>
+                            <span class="calc-step-badge highlight-badge">AUTOMATIC ESTIMATOR &bull; AREA BASED</span>
+                            <h3>Whole-House Hardware, Electrical &amp; Plumbing Estimator</h3>
+                            <p>Automatically estimate wires, conduit pipes, switches, CPVC &amp; PVC pipes, screws, anchors, tile adhesive &amp; waterproofing from total area.</p>
+                        </div>
+                        <button type="button" class="sync-paint-btn" id="hwSyncPaintAreaBtn" title="Sync project area from Paint Estimator">
+                            <span class="sync-icon">🔄</span>
+                            <span class="sync-text">Sync from Paint Estimator</span>
+                            <span class="sync-area-badge" id="hwSyncAreaBadge">900 sq.ft</span>
+                        </button>
+                    </div>
+
+                    <div class="hw-input-grid">
+                        <!-- Project Area Input & Presets -->
+                        <div class="calc-form-group">
+                            <label for="hwAreaInput">1. Total Project / Floor Area (sq. ft.) <span class="required-star">*</span></label>
+                            <div class="input-with-action">
+                                <input type="number" id="hwAreaInput" class="calc-input" value="900" min="50" max="50000" step="25" placeholder="e.g. 900">
+                                <span class="input-suffix">sq.ft</span>
+                            </div>
+                            <div class="preset-buttons-grid hw-presets-grid" style="margin-top: 10px;">
+                                <button type="button" class="preset-btn hw-preset-btn" data-hw-area="350">1 Room (350 sq ft)</button>
+                                <button type="button" class="preset-btn hw-preset-btn active" data-hw-area="900">1 BHK (900 sq ft)</button>
+                                <button type="button" class="preset-btn hw-preset-btn" data-hw-area="1500">2 BHK (1,500 sq ft)</button>
+                                <button type="button" class="preset-btn hw-preset-btn" data-hw-area="2400">3 BHK / Villa (2,400 sq ft)</button>
+                            </div>
+                        </div>
+
+                        <!-- Core Architectural Parameters Grid -->
+                        <div class="calc-form-group">
+                            <label>2. Architectural &amp; Fixture Parameters (Auto-Configured / Editable)</label>
+                            <div class="hw-parameters-row">
+                                <div class="param-box">
+                                    <label for="hwRoomsInput">Number of Rooms</label>
+                                    <div class="param-input-wrap">
+                                        <button type="button" class="param-step-btn" data-step="-1" data-target="hwRoomsInput">−</button>
+                                        <input type="number" id="hwRoomsInput" class="calc-input param-input" value="2" min="1" max="50">
+                                        <button type="button" class="param-step-btn" data-step="1" data-target="hwRoomsInput">+</button>
+                                    </div>
+                                    <span class="param-hint">Hall, Bedrooms, Kitchen</span>
+                                </div>
+
+                                <div class="param-box">
+                                    <label for="hwElecPointsInput">Electrical Points</label>
+                                    <div class="param-input-wrap">
+                                        <button type="button" class="param-step-btn" data-step="-2" data-target="hwElecPointsInput">−</button>
+                                        <input type="number" id="hwElecPointsInput" class="calc-input param-input" value="28" min="2" max="500">
+                                        <button type="button" class="param-step-btn" data-step="2" data-target="hwElecPointsInput">+</button>
+                                    </div>
+                                    <span class="param-hint">~1 point per 30–35 sq.ft</span>
+                                </div>
+
+                                <div class="param-box">
+                                    <label for="hwSwitchesInput">Switches &amp; Sockets</label>
+                                    <div class="param-input-wrap">
+                                        <button type="button" class="param-step-btn" data-step="-2" data-target="hwSwitchesInput">−</button>
+                                        <input type="number" id="hwSwitchesInput" class="calc-input param-input" value="35" min="2" max="600">
+                                        <button type="button" class="param-step-btn" data-step="2" data-target="hwSwitchesInput">+</button>
+                                    </div>
+                                    <span class="param-hint">Lighting + Power Sockets</span>
+                                </div>
+
+                                <div class="param-box">
+                                    <label for="hwPlumbFixturesInput">Plumbing Fixtures</label>
+                                    <div class="param-input-wrap">
+                                        <button type="button" class="param-step-btn" data-step="-1" data-target="hwPlumbFixturesInput">−</button>
+                                        <input type="number" id="hwPlumbFixturesInput" class="calc-input param-input" value="3" min="1" max="30">
+                                        <button type="button" class="param-step-btn" data-step="1" data-target="hwPlumbFixturesInput">+</button>
+                                    </div>
+                                    <span class="param-hint">Bathrooms, Kitchen, Utility</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Routing & Wastage Settings Collapsible -->
+                        <details class="hw-advanced-settings">
+                            <summary class="hw-advanced-summary">
+                                <span>⚙️ Optional Wiring &amp; Plumbing Route Lengths / Wastage Buffer</span>
+                                <span class="summary-arrow">▼</span>
+                            </summary>
+                            <div class="hw-advanced-grid">
+                                <div class="calc-form-group">
+                                    <label for="hwWireRouteInput">Avg Wiring Route per Point (metres)</label>
+                                    <input type="number" id="hwWireRouteInput" class="calc-input" value="12" min="5" max="50" step="1">
+                                    <span class="field-help">Standard residential concealed route: 10–14m</span>
+                                </div>
+                                <div class="calc-form-group">
+                                    <label for="hwPlumbRouteInput">Avg Plumbing Route per Fixture (metres)</label>
+                                    <input type="number" id="hwPlumbRouteInput" class="calc-input" value="15" min="5" max="60" step="1">
+                                    <span class="field-help">Supply &amp; drainage run from tank/drain: 12–18m</span>
+                                </div>
+                                <div class="calc-form-group">
+                                    <label for="hwWastageInput">Material Wastage Allowance (%)</label>
+                                    <select id="hwWastageInput" class="calc-input">
+                                        <option value="0.05">5% (Tight budget / Straight runs)</option>
+                                        <option value="0.10" selected>10% (Standard CPWD Residential Recommended)</option>
+                                        <option value="0.15">15% (Multi-floor / Complex architectural cuts)</option>
+                                    </select>
+                                </div>
+                                <div class="calc-form-group">
+                                    <label for="hwTileAreaInput">Tiled Surface Area (sq. ft.)</label>
+                                    <input type="number" id="hwTileAreaInput" class="calc-input" value="900" min="0" max="50000" step="25">
+                                    <span class="field-help">Floor &amp; wet area tiling surface</span>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Action Buttons -->
+                        <div class="hw-calc-btn-row">
+                            <button type="button" class="calc-btn primary-calc-btn hw-primary-btn" id="hwCalculateBtn">
+                                <span>⚡ Calculate Hardware Requirements</span>
+                            </button>
+                            <button type="button" class="calc-btn secondary-calc-btn" id="hwResetParamsBtn" style="max-width: 180px;">
+                                <span>↺ Reset Norms</span>
+                            </button>
+                        </div>
+
+                        <!-- Assumptions & Disclaimer Notice -->
+                        <div class="hw-disclaimer-notice">
+                            <div class="disclaimer-icon">ℹ️</div>
+                            <div class="disclaimer-content">
+                                <strong>Preliminary Residential Norms Notice:</strong>
+                                <p>Quantities are calculated using standard Indian residential construction benchmarks (CPWD / NBC standards) with a configurable wastage allowance. Electrical wiring accounts for lighting circuits, general sockets, and heavy appliance power loops; plumbing covers hot/cold supply and wastewater gravity drainage. <em>Actual requirements depend on structural layout, ceiling height, and concealed conduit routes. We recommend verification by a licensed electrician or plumber before purchasing.</em></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estimated Materials Output Section (Dynamic Table & Category Filters) -->
+                    <div id="hwEstimateResultsSection" class="hw-results-section" style="display: none; margin-top: 24px;">
+                        <div class="hw-results-header">
+                            <div>
+                                <h4 style="margin: 0; color: #012670; font-size: 17px; font-weight: 800;">
+                                    📋 Estimated Material Requirements Breakdown
+                                </h4>
+                                <p style="margin: 3px 0 0; color: #475569; font-size: 13px;">
+                                    Review, edit quantities or unit prices, and select materials to transfer into your Purchase Bill.
+                                </p>
+                            </div>
+                            <div class="hw-results-actions">
+                                <button type="button" class="mini-text-btn" id="hwSelectAllBtn">Select All</button>
+                                <button type="button" class="mini-text-btn" id="hwDeselectAllBtn">Deselect All</button>
+                            </div>
+                        </div>
+
+                        <!-- Category Summary Tabs -->
+                        <div class="hw-cat-chips-row">
+                            <button type="button" class="hw-cat-chip active" data-cat="all">All Materials (<span id="countAll">0</span>)</button>
+                            <button type="button" class="hw-cat-chip" data-cat="Electrical">⚡ Electrical (<span id="countElec">0</span>)</button>
+                            <button type="button" class="hw-cat-chip" data-cat="Plumbing">🚰 Plumbing (<span id="countPlumb">0</span>)</button>
+                            <button type="button" class="hw-cat-chip" data-cat="Hardware">🔩 Hardware (<span id="countHw">0</span>)</button>
+                            <button type="button" class="hw-cat-chip" data-cat="Construction">🧱 Construction (<span id="countConst">0</span>)</button>
+                        </div>
+
+                        <!-- Materials Table -->
+                        <div class="cart-table-wrapper" style="margin-top: 14px;">
+                            <table class="cart-table hw-estimate-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 40px; text-align: center;">Inc</th>
+                                        <th>Product / Material Name</th>
+                                        <th>Category</th>
+                                        <th>Unit</th>
+                                        <th style="width: 120px;">Unit Price (₹)</th>
+                                        <th style="width: 140px;">Est. Quantity</th>
+                                        <th style="text-align: right; width: 120px;">Line Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="hwEstimateTableBody"></tbody>
+                            </table>
+                        </div>
+
+                        <!-- Category Totals & Transfer Bar -->
+                        <div class="hw-transfer-bar">
+                            <div class="hw-totals-summary">
+                                <div class="hw-tot-item">
+                                    <span>Selected Items:</span>
+                                    <strong id="hwSelectedItemsCount">0 items</strong>
+                                </div>
+                                <div class="hw-tot-item highlight-total">
+                                    <span>Estimated Material Total:</span>
+                                    <strong id="hwSelectedMaterialTotal">₹ 0</strong>
+                                </div>
+                            </div>
+                            <div class="hw-transfer-actions">
+                                <button type="button" class="calc-btn primary-calc-btn" id="hwAddEstimatedToBillBtn">
+                                    <span style="font-size: 15px;">🛒 Add Estimated Materials to Bill ➔</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Add Items Control Bar -->
                 <div class="calc-card" style="margin-bottom: 24px;">
                     <div class="calc-card-header">
@@ -250,7 +448,7 @@
                     <!-- Add Custom Custom Item Toggle -->
                     <div class="custom-item-accordion">
                         <details>
-                            <summary style="cursor: pointer; color: #38bdf8; font-size: 13.5px; font-weight: 600; padding-top: 10px;">
+                            <summary style="cursor: pointer; color: #01379b; font-size: 13.5px; font-weight: 700; padding-top: 10px;">
                                 ➕ Can't find an item? Add a custom hardware item / rate &rarr;
                             </summary>
                             <div class="custom-item-inputs" style="margin-top: 14px; display: flex; gap: 12px; flex-wrap: wrap;">
@@ -292,7 +490,8 @@
                             <table class="cart-table">
                                 <thead>
                                     <tr>
-                                        <th>Product Name</th>
+                                        <th>Product / Material Name</th>
+                                        <th>Unit</th>
                                         <th>Unit Price</th>
                                         <th>Qty</th>
                                         <th>Line Total</th>
@@ -383,34 +582,40 @@
                 <p class="footer-tagline">
                     Difference in Quality. Merging premium architectural coatings, vibrant colours, plumbing &amp; construction hardware supplies across Sankarankoil, Tenkasi and Tamil Nadu.
                 </p>
-                <div class="footer-contact-direct">
-                    <a href="tel:+919487939710" class="direct-contact-item">
-                        <span class="direct-contact-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                        </span>
-                        <span>+91 94879 39710</span>
-                    </a>
-                    <a href="mailto:tstharunpaints@gmail.com" class="direct-contact-item">
-                        <span class="direct-contact-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
-                        </span>
-                        <span>tstharunpaints@gmail.com</span>
-                    </a>
-                    <div class="direct-contact-item">
-                        <span class="direct-contact-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                        </span>
-                        <span>Sankarankoil, Tenkasi Dist, Tamil Nadu</span>
-                    </div>
+                            <div class="footer-contact-direct">
+                <a href="tel:+919750507565" class="direct-contact-item">
+                    <span class="direct-contact-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </span>
+                    <span>+91 97505 07565 / +91 94878 57565</span>
+                </a>
+                <a href="tel:04636290565" class="direct-contact-item">
+                    <span class="direct-contact-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </span>
+                    <span>Ph: 04636 290565 (Landline)</span>
+                </a>
+                <a href="mailto:t.s.tharunpaints@gmail.com" class="direct-contact-item">
+                    <span class="direct-contact-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+                    </span>
+                    <span>t.s.tharunpaints@gmail.com</span>
+                </a>
+                <div class="direct-contact-item">
+                    <span class="direct-contact-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    </span>
+                    <span>823/3, Thiruvenkadam Road, Near Gomathi Ambal Matric School, Sankarankoil &ndash; 627756</span>
                 </div>
-            <div class="footer-socials">
+            </div>
+<div class="footer-socials">
                 <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram" class="social-icon social-insta" title="Instagram">
                     <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                 </a>
                 <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook" class="social-icon social-facebook" title="Facebook">
                     <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                 </a>
-                <a href="https://wa.me/919487939710" target="_blank" rel="noopener" aria-label="WhatsApp" class="social-icon social-whatsapp" title="WhatsApp">
+                <a href="https://wa.me/919750507565" target="_blank" rel="noopener" aria-label="WhatsApp" class="social-icon social-whatsapp" title="WhatsApp">
                     <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
                 </a>
                 <a href="https://youtube.com" target="_blank" rel="noopener" aria-label="YouTube" class="social-icon social-youtube" title="YouTube">
@@ -423,14 +628,13 @@
             <div class="footer-col">
                 <h4 class="footer-col-title">Paints &amp; Finishes</h4>
                 <ul class="footer-links">
-                    <li><a href="colors.html">Interior Wall Emulsions</a></li>
-                    <li><a href="colors.html">Exterior Weatherproof Paints</a></li>
-                    <li><a href="products.html">Gloss &amp; Enamel Finishes</a></li>
-                    <li><a href="products.html">Waterproofing &amp; Primers</a></li>
-                    <li><a href="products.html">Industrial &amp; Auto Coatings</a></li>
-                    <li><a href="products.html">Wood Varnishes &amp; Lacquers</a></li>
-                    <li><a href="products.html">Painting Brushes &amp; Rollers</a></li>
-                    <li><a href="colors.html">Custom Shade Tinting</a></li>
+                    <li><a href="paints.html#paints-royale">Interior Wall Emulsions</a></li>
+                    <li><a href="paints.html#paints-apex">Exterior Weatherproof Paints</a></li>
+                    <li><a href="paints.html#paints-enamel">Gloss &amp; Enamel Finishes</a></li>
+                    <li><a href="paints.html#paints-damp-proof">Waterproofing &amp; Primers</a></li>
+                    <li><a href="paints.html#paints-varnish">Wood Varnishes &amp; Lacquers</a></li>
+                    <li><a href="paints.html#paints-rollers">Painting Brushes &amp; Rollers</a></li>
+                    <li><a href="colors.html#custom-tinting">Custom Shade Tinting</a></li>
                 </ul>
             </div>
 
@@ -438,14 +642,13 @@
             <div class="footer-col">
                 <h4 class="footer-col-title">Hardware Supplies</h4>
                 <ul class="footer-links">
-                    <li><a href="products.html">PVC &amp; Drainage Pipes</a></li>
-                    <li><a href="products.html">Garden &amp; Flexible Hoses</a></li>
-                    <li><a href="products.html">Plastic Pipe Fittings</a></li>
-                    <li><a href="products.html">Hex Bolts, Nuts &amp; Screws</a></li>
-                    <li><a href="products.html">Electrical Wires &amp; Sockets</a></li>
-                    <li><a href="products.html">Switches &amp; Electrical Kits</a></li>
-                    <li><a href="products.html">Construction Hardware</a></li>
-                    <li><a href="products.html">Renovation Essentials</a></li>
+                    <li><a href="plumbing.html#plumbing-pvc-pipe">PVC &amp; Drainage Pipes</a></li>
+                    <li><a href="plumbing.html#plumbing-hose">Garden &amp; Flexible Hoses</a></li>
+                    <li><a href="plumbing.html#plumbing-fittings">Plastic Pipe Fittings</a></li>
+                    <li><a href="construction.html#hardware-hex-bolts">Hex Bolts, Nuts &amp; Screws</a></li>
+                    <li><a href="electrical.html#electrical-wires">Electrical Wires &amp; Sockets</a></li>
+                    <li><a href="electrical.html#electrical-switches">Switches &amp; Electrical Kits</a></li>
+                    <li><a href="construction.html#products">Construction Hardware</a></li>
                 </ul>
             </div>
 
@@ -471,7 +674,7 @@
                 <h4 class="footer-col-title">Our Location</h4>
                 <div class="footer-map-card">
                     <iframe
-                        src="https://www.google.com/maps?q=Sankarankovil,+Tenkasi+District,+Tamil+Nadu&output=embed"
+                        src="https://www.google.com/maps?q=823/3,+Thiruvenkadam+Road,+Near+Gomathi+Ambal+Matric+School,+Sankarankovil,+Tamil+Nadu+627756&output=embed"
                         width="100%"
                         height="140"
                         style="border:0; border-radius:10px; display:block;"
@@ -480,7 +683,7 @@
                         referrerpolicy="no-referrer-when-downgrade"
                         title="TS Tharun Paints location map">
                     </iframe>
-                    <a href="https://www.google.com/maps/search/?api=1&query=TS+Tharun+Paints+Sankarankovil"
+                    <a href="https://www.google.com/maps/search/?api=1&query=823%2F3+Thiruvenkadam+Road+Gomathi+Ambal+School+Sankarankovil"
                        target="_blank" rel="noopener" class="map-cta">
                         Open in Google Maps ↗
                     </a>
@@ -506,7 +709,7 @@
     </footer>
 
     <!-- Floating WhatsApp Action Button -->
-    <a href="https://wa.me/919487939710?text=Hello%20T.S.%20Tharun%20Paints%2C%20I%20have%20an%20enquiry."
+    <a href="https://wa.me/919750507565?text=Hello%20T.S.%20Tharun%20Paints%2C%20I%20have%20an%20enquiry."
        class="floating-whatsapp"
        target="_blank"
        rel="noopener"

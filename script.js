@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const category = document.getElementById("contact-category")?.value || "General Enquiry";
       const message = document.getElementById("contact-message")?.value || "";
       const msg = `Hello T.S. Tharun Paints,\nName: ${name}\nPhone: ${phone}\n${email ? "Email: " + email + "\n" : ""}Interested In: ${category}\nRequirements: ${message}`;
-      const url = "https://wa.me/919487939710?text=" + encodeURIComponent(msg);
+      const url = "https://wa.me/919750507565?text=" + encodeURIComponent(msg);
       window.open(url, "_blank");
       contactForm.reset();
     });
@@ -304,7 +304,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     const chipLabel = chip.textContent.trim();
                     if (waBtn) {
                         const message = encodeURIComponent(`Hello T.S. Tharun Paints, I want to enquire about: ${chipLabel} (under ${cardTitle}).`);
-                        waBtn.href = `https://wa.me/919487939710?text=${message}`;
+                        waBtn.href = `https://wa.me/919750507565?text=${message}`;
                     }
                 } else if (waBtn) {
                     waBtn.href = originalWaHref;
@@ -567,37 +567,125 @@ if (document.readyState === 'loading') {
 // 5. Contact Page: Sequential Left-to-Right 3-Box Swapping Animation Controller
 (function initContactCardsSwapAnimation() {
     const contactPanel = document.querySelector('.contact-info-panel');
-    const swapCards = document.querySelectorAll('.contact-info-card.swap-box, .contact-info-panel > .contact-info-card');
+    const swapCards = document.querySelectorAll('.contact-info-card');
     const formPanel = document.querySelector('.contact-form-panel');
     if (!contactPanel || !swapCards.length) return;
-    // Reset and trigger smooth left-to-right sequential entry
+
+    // Trigger smooth left-to-right sequential entry
     const triggerSwapAnimation = () => {
         swapCards.forEach((card, idx) => {
             card.style.animation = 'none';
-            // Force reflow
-            void card.offsetWidth;
-            const delay = 0.20 + (idx * 0.50);
-            card.style.animation = `cardSwapFromLeft 1.6s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s forwards`;
+            void card.offsetWidth; // Force reflow
+            const delay = 0.15 + (idx * 0.35);
+            card.style.animation = `cardSwapFromLeft 1.2s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s forwards`;
         });
         if (formPanel) {
             formPanel.style.animation = 'none';
             void formPanel.offsetWidth;
-            formPanel.style.animation = 'formSwapFromRight 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.50s forwards';
+            formPanel.style.animation = 'formSwapFromRight 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards';
         }
     };
-    // Use IntersectionObserver to replay when scrolled into view
+
+    // Run on initial load
+    triggerSwapAnimation();
+
+    // Use IntersectionObserver to replay gracefully when scrolled back into view
     if ('IntersectionObserver' in window) {
-        let hasAnimated = false;
+        let isFirst = true;
         const panelObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting && !hasAnimated) {
-                    hasAnimated = true;
-                    triggerSwapAnimation();
+                if (entry.isIntersecting) {
+                    if (!isFirst) {
+                        triggerSwapAnimation();
+                    }
+                    isFirst = false;
                 }
             });
         }, { threshold: 0.15 });
         panelObserver.observe(contactPanel);
-    } else {
-        triggerSwapAnimation();
     }
+
+    // Continuous Subtle Sequential Highlight Wave (Card 1 -> 2 -> 3)
+    let activeWaveIdx = 0;
+    setInterval(() => {
+        if (!contactPanel || contactPanel.matches(':hover')) return;
+        swapCards.forEach((c, i) => {
+            if (i === activeWaveIdx) {
+                c.classList.add('wave-active');
+                setTimeout(() => c.classList.remove('wave-active'), 1400);
+            } else {
+                c.classList.remove('wave-active');
+            }
+        });
+        activeWaveIdx = (activeWaveIdx + 1) % swapCards.length;
+    }, 3400);
+})();
+
+// 6. Deep-Link Smooth Scroll & Focus Handler for Footer Terms
+(function initFooterDeepLinking() {
+    function scrollToTarget(hash) {
+        if (!hash) return;
+        try {
+            const target = document.querySelector(hash);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        } catch (e) {
+            // Ignore invalid selector
+        }
+    }
+
+    window.addEventListener('load', function () {
+        if (window.location.hash) {
+            setTimeout(function () {
+                scrollToTarget(window.location.hash);
+            }, 150);
+        }
+    });
+
+    window.addEventListener('hashchange', function () {
+        if (window.location.hash) {
+            scrollToTarget(window.location.hash);
+        }
+    });
+})();
+
+// 7. Synchronized Hero Wall Painting Animation (Colors Page)
+(function initHeroPaintingAnimation() {
+    document.addEventListener("DOMContentLoaded", function () {
+        const liveName = document.getElementById("heroLivePaintName");
+        const liveHex = document.getElementById("heroLivePaintHex");
+        const liveDot = document.getElementById("heroLivePaintDot");
+        if (!liveName || !liveHex) return;
+
+        const paintShades = [
+            { name: "Royale Imperial Blue", hex: "#01379B", glow: "#01379b" },
+            { name: "Emerald Jade Green", hex: "#0F712B", glow: "#0f712b" },
+            { name: "Warm Sunburst Amber", hex: "#F59E0B", glow: "#f59e0b" },
+            { name: "Crimson Velvet Red", hex: "#EC0103", glow: "#ec0103" },
+            { name: "Ocean Turquoise Cyan", hex: "#0284C7", glow: "#0284c7" },
+            { name: "Regal Velvet Violet", hex: "#7C3AED", glow: "#7c3aed" }
+        ];
+
+        let currentIdx = 0;
+        // 18s total cycle / 6 shades = exactly 3000ms (3s) per shade
+        setInterval(function () {
+            currentIdx = (currentIdx + 1) % paintShades.length;
+            const shade = paintShades[currentIdx];
+
+            liveName.style.opacity = "0";
+            liveHex.style.opacity = "0";
+
+            setTimeout(function () {
+                liveName.textContent = shade.name;
+                liveHex.textContent = shade.hex;
+                if (liveDot) {
+                    liveDot.style.backgroundColor = shade.glow;
+                    liveDot.style.boxShadow = `0 0 12px ${shade.glow}`;
+                }
+                liveName.style.opacity = "1";
+                liveHex.style.opacity = "1";
+            }, 220);
+        }, 3000);
+    });
 })();
